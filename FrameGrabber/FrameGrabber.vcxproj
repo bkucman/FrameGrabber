@@ -21,8 +21,6 @@
   <ItemGroup>
     <ClCompile Include="action.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="main1.cpp" />
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="VideoManagement.cpp" />
   </ItemGroup>
   <ItemGroup>
