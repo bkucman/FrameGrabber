@@ -113,5 +113,39 @@ std::string make_file_name(cv::String file_name, bool video, bool images, bool r
 
 	return fileName;
 }
+string set_name_images(cv::String file_name) {
+	string file = make_std_string(file_name);
+	file = file + to_string(count_images) + ".png";
+	count_images++;
+	return file;
+}
+
+void remove_images(cv::String file_name) {
+	cout << " rm ";
+	string file = make_std_string(file_name);
+	string name;
+	name = file + to_string(count_images) + ".png";
+	cout << name;
+	char* str = &name[0u];
+	//cout << remove(str);
+	while (remove(str) == 0) {
+		cout << str;
+		count_images++;
+		name = file + to_string(count_images) + ".png";
+		str = &name[0u];
+	}
+	count_images = 0;
+}
+
+bool check_end_video(cv::String file_name) {
+	imwrite(set_name_images(file_name), frame_video);
+	move_frames_right(1);
+	read_frame();
+	if (trackbar_value_frame == number_of_frames) {
+		set_first_frame();
+		return false;
+	}
+	return true;
+}
 
 #endif VIDEO_MANAGEMENT_H

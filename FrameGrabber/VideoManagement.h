@@ -17,3 +17,6 @@ void read_frame_lastORFirst(int act);
 void clear_variable();
 std::string make_file_name(cv::String file_name, bool video, bool images, bool record = false);
 std::string make_std_string(cv::String file_name);
+std::string set_name_images(cv::String file_name);
+void remove_images(cv::String file_name);
+bool check_end_video(cv::String file_name);
