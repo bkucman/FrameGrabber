@@ -2,6 +2,7 @@
 #include<iostream>
 #include <conio.h>
 #include <windows.h>
+#include <string.h>
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 
@@ -14,3 +15,5 @@ void set_last_frame();
 void read_frame_1();
 void read_frame_lastORFirst(int act);
 void clear_variable();
+std::string make_file_name(cv::String file_name, bool video, bool images, bool record = false);
+std::string make_std_string(cv::String file_name);

@@ -3,6 +3,7 @@
 //#include "EnhancedWindow.h"
 
 #include "VideoManagement.h" // to change frames in video
+#include "main.h"
 
 using namespace cv;
 using namespace std;
@@ -13,6 +14,8 @@ int main() {
 
 	// captured keys
 	int butt = 0;
+
+	int fps = 24;
 
 	// file names
 	cv::String file_name = "";
@@ -37,6 +40,7 @@ int main() {
 
 	// action varaible
 	int action = 0;
+	int choose_action_record = -1;
 
 	// extern variable 
 	extern VideoCapture video_cap;
@@ -48,6 +52,9 @@ int main() {
 	bool prev_scene = false;
 	bool next_scene = false;
 	bool file_name_flag = false;
+	bool choose_source_flag = false;
+	bool save_video_flag = false;
+	bool record = false;
 
 	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME, 2);
@@ -277,12 +284,201 @@ int main() {
 		// zapis wideo
 		else if (action == 3) {
 
+			//choose record option
+			if (!choose_source_flag) {
+				if (cvui::button(frame, 150, 20, 500, 100, "Record from camera")) {
+					choose_action_record = 1;
+					choose_source_flag = true;
+				}
+				if (cvui::button(frame, 150, 120, 500, 100, "Record from video")) {
+					choose_action_record = 2;
+					choose_source_flag = true;
+				}
+			}
+			else {
+				//set files
+				if (!file_name_flag) {
+					if (choose_action_record == 1) {
+						file_name = "cap";
+						file_name_flag = true;
+						continue;
+					}
+					cvui::text(frame, 100, 80, "Image/Video file:", 0.4);
+					cvui::input(frame, 250, 80, 150, "file_name", file_name);
+
+					if (cvui::button(frame, 100, 160, 100, 20, "Submit")) {
+						file_name_flag = true;
+					}
+					if (cvui::button(frame, 100, 190, 100, 20, "Default")) {
+						file_name = videoName;
+						file_name_flag = true;
+					}
+					cvui::text(frame, 100, 250, message, 0.4);
+					cvui::update;
+				}
+				else if (choose_action_record == 1) {
+					if (cvui::button(frame, 50, 20, "Start recording") || GetAsyncKeyState(0x53) && !record) {
+						record = true;
+						save_video_flag = false;
+					}
+
+					if (cvui::button(frame, 50, 50, "Stop recording") || GetAsyncKeyState(0x45) && record) {
+						record = false;
+						save_video_flag = true;
+						video_writer.release();
+						message = "No recording";
+					}
+
+					cvui::text(frame, 30, 120, "FPS value:", 0.7);
+					cvui::trackbar(frame, 30, 180, 220, &fps, 0, 60, 1, "%.LF");
+
+					if (!video_cap.isOpened()) {
+						if (!video_cap.isOpened())
+							video_cap = VideoCapture(0);
+
+						if (!video_cap.isOpened()) {
+							file_name_flag = false;
+							save_video_flag = false;
+							record = false;
+							message = "Open cap failed !";
+							continue;
+						}
+						else {
+							message = "";
+							if (!video_cap.read(frame_video)) {
+								message = "Read camera failed";
+								goto back1;
+							};
+						}
+					}
+					else {
+						file_name = "cap";
+						file_name_flag = true;
+						cv::imshow(file_name, frame_video);
+						if (!video_cap.read(frame_video)) {
+							message = "Read camera failed";
+							goto back1;
+						}
+
+						if (record) {
+							putText(frame_video, "REC", Point2i(30, 30), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255), 2);
+							message = "Recording";
+							if (!save_video_flag) {
+								video_writer = VideoWriter(make_file_name(file_name, true, false, true), CV_FOURCC('D', 'I', 'V', 'X'), fps, Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
+								save_video_flag = true;
+							}
+
+							if (save_video_flag) {
+								video_writer.write(frame_video);
+							}
+						}
+						else {
+							message = "Recording stopped";
+							putText(frame_video, "STOP", Point2i(30, 30), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 255), 2);
+						}
+					}
+				}
+				else if (choose_action_record == 2) {
+					if (cvui::button(frame, 30, 20, "Start recording") || GetAsyncKeyState(0x53) && !record) {
+						record = true;
+						save_video_flag = false;
+					}
+
+					if (cvui::button(frame, 30, 50, "Stop recording") || GetAsyncKeyState(0x45) && record) {
+						record = false;
+						save_video_flag = true;
+						video_writer.release();
+						message = "No recording";
+					}
+
+					cvui::text(frame, 30, 120, "FPS value:", 0.7);
+					cvui::trackbar(frame, 30, 180, 220, &fps, 0, 60, 1, "%.LF");
+
+					if (!video_cap.isOpened()) {
+						if (!video_cap.isOpened())
+							video_cap = VideoCapture(file_name);
+
+						if (!video_cap.isOpened()) {
+							file_name_flag = false;
+							save_video_flag = false;
+							record = false;
+							message = "Open cap Failed !";
+							continue;
+						}
+						else {
+							message = "No recording";
+							trackbar_value_frame = 0;
+							number_of_frames = video_cap.get(CAP_PROP_FRAME_COUNT) - 1;
+							read_frame();
+							video_cap.read(frame_video);
+						}
+					}
+					else {
+						file_name_flag = true;
+						cv::imshow(file_name, frame_video);
+
+						if (cvui::trackbar(frame, 2, 550, 796, &trackbar_value_frame, 0, number_of_frames, 1, "%.LF")) {
+							read_frame();
+							cvui::update;
+						}
+
+						if (record) {
+							video_cap.read(frame_video);
+							message = "Recording";
+							if (!save_video_flag) {
+								//putText(frame_video, "REC", Point2i(30, 30), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255), 2);
+								video_writer = VideoWriter(make_file_name(file_name, true, false, true), CV_FOURCC('D', 'I', 'V', 'X'), fps, Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
+								save_video_flag = true;
+							}
+							if (save_video_flag && trackbar_value_frame <= number_of_frames) {
+								move_frames_right(1);
+								read_frame();
+								message = "Recording";
+								if (trackbar_value_frame == number_of_frames) {
+									save_video_flag = false;
+									set_first_frame();
+									message = "No recording";
+								}
+								video_writer.write(frame_video);
+							}
+						}
+						else {
+							message = "Recording stopped";
+							putText(frame_video, "STOP", Point2i(30, 30), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 255, 255), 2);
+						}
+					}
+				}
+			}
+
+			//cofanie
 			butt = waitKeyEx(10);
-			if (butt == 27)
+			if (cvui::button(frame, 670, 20, 120, 28, "QUIT") || butt == 27) {
+				destroyAllWindows();
+				if (video_cap.isOpened())
+					video_cap.release();
+				if (video_writer.isOpened())
+					video_writer.release();
 				break;
-			message = "Not implemented yet";
-			cvui::text(frame, 100, 550, message, 0.4);
-			cvui::update();
+			}
+
+			if (cvui::button(frame, 670, 50, 120, 28, "Main menu")) {
+				message = "";
+			back1:
+				action = 0;
+				choose_action_record = -1;
+				destroyWindow(file_name);
+				record = false;
+				file_name_flag = false;
+				save_video_flag = false;
+				choose_source_flag = false;
+				if (video_cap.isOpened())
+					video_cap.release();
+				if (video_writer.isOpened())
+					video_writer.release();
+				continue;
+			}
+			cvui::text(frame, 100, 250, message, 0.4);
+			cvui::update;
 			cvui::imshow(WINDOW_NAME, frame);
 		}
 		// save images

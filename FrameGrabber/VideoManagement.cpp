@@ -4,11 +4,16 @@
 
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
-#include<iostream>
+#include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+
 using namespace cv;
 using namespace std;
+using namespace chrono;
 
 int trackbar_value_frame = 0;
 int number_of_frames = 0;
@@ -73,6 +78,40 @@ void clear_variable() {
 	number_of_frames = 0;
 	actual_frame_video = 0;
 }
+std::string make_std_string(cv::String file_name) {
+	string file = file_name.operator std::string();
+	size_t lastindex = file.find_last_of(".");
 
+	return file.substr(0, lastindex);
+}
+
+std::string make_file_name(cv::String file_name, bool video, bool images, bool record = false) {
+
+	string file = make_std_string(file_name);
+
+	chrono::steady_clock time;
+	auto start = time.now();
+	auto stop = time.now();
+	auto time_span = static_cast<chrono::duration<double>>(stop - start);
+	auto now1 = system_clock::now();
+	auto in_time_t = system_clock::to_time_t(now1);
+
+	stringstream a;
+	a << put_time(localtime(&in_time_t), "REC%Y_%m_%d_%X");
+	string fileName;
+	if (record) {
+		fileName = file + "_record_" + a.str() + ".avi";
+	}
+	else if (images) {
+		fileName = file + "_images_" + a.str() + ".avi";
+	}
+	else if (video)
+		fileName = file + "_logo_" + a.str() + ".avi";
+	else
+		fileName = file + "_logo_" + a.str() + ".png";
+	replace(fileName.begin(), fileName.end(), ':', '-');
+
+	return fileName;
+}
 
 #endif VIDEO_MANAGEMENT_H
