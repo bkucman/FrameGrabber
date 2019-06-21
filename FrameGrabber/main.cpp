@@ -1,9 +1,9 @@
 #include<iostream>
 #include <conio.h>
 #include <windows.h>
-#include "action.h"
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
+
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
 //#include "EnhancedWindow.h"
@@ -17,144 +17,108 @@ using namespace std;
 
 int main() {
 
-	cout << "hello";
+	// captured keys
 	int butt = 0;
-	int butt1 = 0;
-	VideoCapture capture(0);
-	Mat frameq;
-	cv::Mat frame = cv::Mat(300, 600, CV_8UC3);
 
-	bool checked = false;
-	bool checked2 = true;
-	int count = 0;
-	double countFloat = 0.0;
-	extern double trackbarValue;
-	cv::String input1_value = "text1";
+	string message = "";
+	// Mat
+	// menu frame
+	Mat frame = Mat(600, 800, CV_8UC3);
+
+	// action varaible
+	int action = 0;
+
 	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
-	cvui::init(WINDOW_NAME,10);
+	cvui::init(WINDOW_NAME, 2);
 
 	while (true) {
-		capture.read(frameq);
-		
 		frame = cv::Scalar(49, 52, 49);
+		// main menu
+		if (action == 0) {
+			if (cvui::button(frame, 150, 20, 500, 100, "Frame Grabber")) {
+				action = 1;
+			}
+			else if (cvui::button(frame, 150, 120, 500, 100, "Add logo")) {
+				action = 2;
+			}
+			else if (cvui::button(frame, 150, 220, 500, 100, "Record")) {
+				action = 3;
+			}
+			else if (cvui::button(frame, 150, 320, 500, 100, "Save to images")) {
+				action = 4;
+			}
+			else if (cvui::button(frame, 150, 420, 500, 100, "Video from images")) {
+				action = 5;
+			}
+			if (cvui::button(frame, 660, 20, 120, 28, "QUIT") || butt == 27)
+			{
+				destroyAllWindows();
+				break;
+			}
 
-		// Show some pieces of text.
-		cvui::text(frame, 50, 30, "Hey there!");
+			cvui::text(frame, 100, 550, message, 0.4);
+			cvui::update();
+			cvui::imshow(WINDOW_NAME, frame);
 
-		// You can also specify the size of the text and its color
-		// using hex 0xRRGGBB CSS-like style.
-		cvui::text(frame, 200, 30, "Use hex 0xRRGGBB colors easily", 0.4, 0xff0000);
-
-		// Sometimes you want to show text that is not that simple, e.g. strings + numbers.
-		// You can use cvui::printf for that. It accepts a variable number of parameter, pretty
-		// much like printf does.
-		cvui::printf(frame, 200, 50, 0.4, 0x00ff00, "Use printf formatting: %d + %.2f = %f", 2, 3.2, 5.2);	
-
-		// If you do not specify the button width/height, the size will be
-		// automatically adjusted to properly house the label.
-		cvui::button(frame, 200, 70, "Button with large label");
-
-		// You can tell the width and height you want
-		cvui::button(frame, 410, 70, 15, 15, "x");
-
-		// Window components are useful to create HUDs and similars. At the
-		// moment, there is no implementation to constraint content within a
-		// a window.
-		//cvui::window(frame, 50, 120, 120, 100, "Window");
-
-		// The counter component can be used to alter int variables. Use
-		// the 4th parameter of the function to point it to the variable
-		// to be changed.
-		cvui::counter(frame, 200, 120, &count);
-
-		// Counter can be used with doubles too. You can also specify
-		// the counter's step (how much it should change
-		// its value after each button press), as well as the format
-		// used to print the value.
-		cvui::counter(frame, 320, 120, &countFloat, 0.1, "%.1f");
-
-		// The trackbar component can be used to create scales.
-		// It works with all numerical types (including chars).
-		cvui::trackbar(frame, 420, 110, 150, &trackbarValue, 0.0, 50.0);
-
-		// Checkboxes also accept a pointer to a variable that controls
-		// the state of the checkbox (checked or not). cvui::checkbox() will
-		// automatically update the value of the boolean after all
-		// interactions, but you can also change it by yourself. Just
-		// do "checked = true" somewhere and the checkbox will change
-		// its appearance.
-		cvui::checkbox(frame, 200, 160, "Checkbox", &checked);
-		cvui::checkbox(frame, 200, 190, "A checked checkbox", &checked2);
-
-		// Display the lib version at the bottom of the screen
-		cvui::printf(frame, frame.cols - 80, frame.rows - 20, 0.4, 0xCECECE, "cvui v.%s", cvui::VERSION);
-
-		// This function must be called *AFTER* all UI components. It does
-		// all the behind the scenes magic to handle mouse clicks, etc.
-
-		butt = waitKeyEx(5);
-		//butt1 = waitKey(15);
-
-		// tak dzi³a przechwytywanie kombinacji klawiszy, musz¹ byæ w kolejnoœci od najwiêkszej liczby klawiszy 
-		if (butt == 27)
-			break;
-		cvui::input(frame, 40, 220, 100, "input2", input1_value);
-		// przyk³ad wspó³dzia³ania buttona i skrótu 
-		if (cvui::button(frame, 50, 260, "Ctr+Sh+L") || GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_LEFT))
-		{
-			cout << "Ctrl+Shif+Left \n";
+			butt = waitKeyEx(10);
+			if (butt == 27)
+				break;
 		}
-		else if (GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_RIGHT))
-		{
-			cout << "Ctrl+Shift+Right \n";
-		}
-		else if (GetAsyncKeyState(VK_SHIFT)  &&  GetAsyncKeyState(83)) {
-			cout << "Shift + S\n";
-		}
-		else if (GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_LEFT)) {
-			cout << "CTRL +  LEFT\n";
-		}
-		else if (GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_RIGHT)) {
-			cout << "CTRL +  RIGHT\n";
-		}
-		else if (GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_LEFT)) {
-			cout << "Shift + LEFT\n";
-		}
-		else if (GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_RIGHT)) {
-			cout << "Shift + RIGHT\n";
-		}
-		else if (GetAsyncKeyState(VK_MENU) && GetAsyncKeyState(VK_LEFT)) {
-			cout << "ALT + LEFT\n";
-		}
-		else if (cvui::button(frame, 50, 130, "PlusFrame") || GetAsyncKeyState(VK_RIGHT)) {
-			changeFrame(1);
-			cout << "RIGHT\n";
-		}
-		else if (cvui::button(frame, 50, 160, "MinusFrame") || GetAsyncKeyState(VK_LEFT)) {
-			changeFrame(-1);
-			cout << "LEFT\n";
-		}
-		else if (GetAsyncKeyState(VK_PRIOR)) {
-			cout << "pagejup\n";
-		}
-		else if (GetAsyncKeyState(VK_NEXT)) {
-			cout << "pagedown\n";
-		}
+		// frame geabber
+		else if (action == 1) {
 
-		else if (cvui::button(frame, 50, 60, "Button")) {
-			std::cout << "Button clicked" << std::endl;
+			butt = waitKeyEx(10);
+			if (butt == 27)
+				break;
+			message = "Not implemented yet";
+			cvui::text(frame, 100, 550, message, 0.4);
+			cvui::update();
+			cvui::imshow(WINDOW_NAME, frame);
 		}
-		else if (cvui::button(frame, 50, 90, "trackC") || GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_LEFT)) {
-			changeTrackBarPlus2();
-		}
-		
-		cvui::update();
-		cvui::imshow(WINDOW_NAME, frame);
+		// add logo
+		else if (action == 2) {
 
-		imshow("Asd", frameq);
-		
+			butt = waitKeyEx(10);
+			if (butt == 27)
+				break;
+			message = "Not implemented yet";
+			cvui::text(frame, 100, 550, message, 0.4);
+			cvui::update();
+			cvui::imshow(WINDOW_NAME, frame);
+		}
+		// zapis wideo
+		else if (action == 3) {
+
+			butt = waitKeyEx(10);
+			if (butt == 27)
+				break;
+			message = "Not implemented yet";
+			cvui::text(frame, 100, 550, message, 0.4);
+			cvui::update();
+			cvui::imshow(WINDOW_NAME, frame);
+		}
+		// save images
+		else if (action == 4) {
+
+			butt = waitKeyEx(10);
+			if (butt == 27)
+				break;
+			message = "Not implemented yet";
+			cvui::text(frame, 100, 550, message, 0.4);
+			cvui::update();
+			cvui::imshow(WINDOW_NAME, frame);
+		}
+		// make video from images
+		else if (action == 5) {
+
+			butt = waitKeyEx(10);
+			if (butt == 27)
+				break;
+			message = "Not implemented yet";
+			cvui::text(frame, 100, 550, message, 0.4);
+			cvui::update();
+			cvui::imshow(WINDOW_NAME, frame);
+		}
 	}
-	cout << calc(2, 3); // wywo³anie funkcji z innego pliku 
-	//getchar();
 	return 0;
 }

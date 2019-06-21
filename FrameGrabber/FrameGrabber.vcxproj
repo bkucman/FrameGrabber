@@ -19,12 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="action.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="VideoManagement.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="action.h" />
     <ClInclude Include="cvui.h" />
     <ClInclude Include="EnhancedWindow.h" />
     <ClInclude Include="VideoManagement.h" />
