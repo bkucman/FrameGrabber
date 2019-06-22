@@ -23,7 +23,7 @@ int count_images = 0;
 VideoCapture video_cap, video_cap1;
 Mat frame_video;
 Mat frame_video1;
-string message = "";
+
 
 void move_frames_right(int n) {
 	if (trackbar_value_frame + n > number_of_frames)
@@ -127,7 +127,6 @@ void remove_images(cv::String file_name) {
 	name = file + to_string(count_images) + ".png";
 	cout << name;
 	char* str = &name[0u];
-	//cout << remove(str);
 	while (remove(str) == 0) {
 		cout << str;
 		count_images++;
@@ -148,4 +147,25 @@ bool check_end_video(cv::String file_name) {
 	return true;
 }
 
+string make_video_from_images(cv::String file_name, int fps) {
+	string image_name;
+	image_name = make_std_string(file_name) + to_string(count_images) + ".png";
+	cout << image_name;
+	frame_video = imread(image_name, -1);
+	if (frame_video.empty()) {
+		return "No images";
+	}
+	VideoWriter video_writer = VideoWriter(make_file_name(file_name, true, true), CV_FOURCC('D', 'I', 'V', 'X'), fps, Size(frame_video.cols, frame_video.rows), true);
+
+	while (!frame_video.empty()) {
+		video_writer.write(frame_video);
+		count_images++;
+		image_name = make_std_string(file_name) + to_string(count_images) + ".png";
+		frame_video = imread(image_name, -1);
+
+	}
+	video_writer.release();
+	count_images = 0;
+	return "Done !";
+}
 #endif VIDEO_MANAGEMENT_H

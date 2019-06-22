@@ -20,3 +20,4 @@ std::string make_std_string(cv::String file_name);
 std::string set_name_images(cv::String file_name);
 void remove_images(cv::String file_name);
 bool check_end_video(cv::String file_name);
+std::string make_video_from_images(cv::String file_name, int fps);

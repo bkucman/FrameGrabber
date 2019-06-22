@@ -62,6 +62,9 @@ int main() {
 	bool action_type_logo = false;
 	bool file_logo_flag = false;
 
+	// checkbox
+	bool checked_source = false;
+
 	// Init cvui and tell it to create a OpenCV window, i.e. cv::namedWindow(WINDOW_NAME).
 	cvui::init(WINDOW_NAME, 2);
 
@@ -907,13 +910,57 @@ int main() {
 		}
 		// make video from images
 		else if (action == 5) {
+			// make from video
+			if (!file_name_flag) {
+
+				cvui::text(frame, 100, 83, "Video file:", 0.4);
+				cvui::input(frame, 200, 80, 150, "file_name", file_name);
+				cvui::text(frame, 380, 83, "without extension", 0.4);
+				cvui::text(frame, 120, 120, "if camera, mark checkbox and Submit", 0.4);
+				cvui::checkbox(frame, 210, 163, "Camera", &checked_source);
+
+				if (cvui::button(frame, 100, 160, 100, 20, "Submit")) {
+					if (checked_source) {
+						file_name = "cap";
+					}
+					message = "";
+					file_name_flag = true;
+					cvui::imshow(WINDOW_NAME, frame);
+				}
+				if (cvui::button(frame, 100, 190, 100, 20, "Default")) {
+					file_name = videoName;
+					file_name_flag = true;
+					message = "";
+					cvui::imshow(WINDOW_NAME, frame);
+				}
+				cvui::text(frame, 100, 240, "FPS value:", 1);
+				cvui::trackbar(frame, 100, 280, 220, &fps, 0, 60, 1, "%.LF");
+				cvui::text(frame, 100, 350, message, 0.4);
+				cvui::update;
+
+			}
+			else {
+				message = make_video_from_images(file_name, fps);
+				file_name_flag = false;
+				checked_source = false;
+			}
 
 			butt = waitKeyEx(10);
-			if (butt == 27)
+			if (cvui::button(frame, 670, 20, 120, 28, "QUIT") || butt == 27) {
+				destroyAllWindows();
 				break;
-			message = "Not implemented yet";
-			cvui::text(frame, 100, 550, message, 0.4);
-			cvui::update();
+			}
+
+			if (cvui::button(frame, 670, 50, 120, 28, "Main menu")) {
+				action = 0;
+				message = "";
+				file_name_flag = false;
+				count_images = 0;
+				checked_source = false;
+				file_name = "";
+				continue;
+			}
+			cvui::update;
 			cvui::imshow(WINDOW_NAME, frame);
 		}
 	}
