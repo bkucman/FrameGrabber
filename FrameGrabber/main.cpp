@@ -120,7 +120,6 @@ int main() {
 					file_name_flag = true;
 				}
 				if (cvui::button(frame, 650, 50, 120, 28, "Main menu")) {
-					cout << "Jestem tutaj";
 					action = 0;
 					prev_scene = false;
 					next_scene = false;
@@ -134,7 +133,6 @@ int main() {
 				cvui::update;
 				if (cvui::button(frame, 650, 20, 120, 28, "QUIT") || butt == 27)
 				{
-					//RELEASE !!!!
 					video_cap.release();
 					destroyAllWindows();
 					break;
@@ -184,7 +182,6 @@ int main() {
 					read_frame();
 					cvui::update;
 				}
-				//cvui::button(frame, 150, 20, 500, 100, "FrameGrabberVideo")
 				else if (cvui::button(frame, 50, 370, 120, 28, "Prev Scene") || GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_LEFT))
 				{
 					prev_scene = true;
@@ -253,7 +250,6 @@ int main() {
 				cvui::text(frame, 200, 410, "Ctrl+Shift+Right", 0.4);
 
 				if (cvui::button(frame, 650, 50, 120, 28, "Main menu")) {
-					cout << "Jestem tutaj";
 					action = 0;
 					prev_scene = false;
 					next_scene = false;
@@ -282,290 +278,283 @@ int main() {
 		// add logo
 		else if (action == 2) {
 
-		cvui::text(frame, 330, 30, "Add logo", 1);
-		// choose where insert logo
-		if (!choose_source_flag) {
-			if (cvui::button(frame, 150, 120, 500, 100, "Add to image")) {
-				action_type_logo = 1;
-				choose_source_flag = true;
+			cvui::text(frame, 330, 30, "Add logo", 1);
+			// choose where insert logo
+			if (!choose_source_flag) {
+				if (cvui::button(frame, 150, 120, 500, 100, "Add to image")) {
+					action_type_logo = 1;
+					choose_source_flag = true;
+				}
+				else if (cvui::button(frame, 150, 220, 500, 100, "Add to video")) {
+					action_type_logo = 2;
+					choose_source_flag = true;
+				}
+				else if (cvui::button(frame, 150, 320, 500, 100, "Add to camera")) {
+					action_type_logo = 3;
+					choose_source_flag = true;
+				}
 			}
-			else if (cvui::button(frame, 150, 220, 500, 100, "Add to video")) {
-				action_type_logo = 2;
-				choose_source_flag = true;
-			}
-			else if (cvui::button(frame, 150, 320, 500, 100, "Add to camera")) {
-				action_type_logo = 3;
-				choose_source_flag = true;
-			}
-		}
-		else {
-			// set files
-			if (!file_name_flag || !file_logo_flag) {
+			else {
+				// set files
+				if (!file_name_flag || !file_logo_flag) {
 
-				if (action_type_logo != 3) {
-					cvui::text(frame, 100, 80, "Image/Video file:", 0.4);
-					cvui::input(frame, 250, 80, 150, "file_name", file_name);
+					if (action_type_logo != 3) {
+						cvui::text(frame, 100, 80, "Image/Video file:", 0.4);
+						cvui::input(frame, 250, 80, 150, "file_name", file_name);
+					}
+
+					cvui::text(frame, 100, 110, "Logo file:", 0.4);
+					cvui::input(frame, 250, 110, 150, "logo_name", logo_name);
+
+					if (cvui::button(frame, 100, 160, 100, 20, "Submit")) {
+						if (action_type_logo == 3)
+							file_name = "cap";
+						file_name_flag = true;
+						file_logo_flag = true;
+					}
+					if (cvui::button(frame, 100, 190, 100, 20, "Default")) {
+						if (action_type_logo == 1)
+							file_name = image_name;
+						else if (action_type_logo == 2)
+							file_name = videoName;
+						else if (action_type_logo == 3)
+							file_name = "cap";
+						logo_name = logoName;
+						file_name_flag = true;
+						file_logo_flag = true;
+					}
+					cvui::text(frame, 100, 250, message, 0.4);
+					cvui::update;
 				}
+				// add to image
+				else if (action_type_logo == 1) {
+					if (image.empty() || logo.empty()) {
+						image = imread(file_name);
+						image.copyTo(image_copy);
+						if (image.empty()) {
+							file_name_flag = false;
+							message = "Open file failed.";
+							continue;
+						}
+						else
+							message = "";
+						logo = imread(logo_name, -1);
+						if (logo.empty()) {
+							file_logo_flag = false;
+							message = "Open logo failed.";
+							continue;
+						}
+						else
+							message = "";
 
-				cvui::text(frame, 100, 110, "Logo file:", 0.4);
-				cvui::input(frame, 250, 110, 150, "logo_name", logo_name);
-
-				if (cvui::button(frame, 100, 160, 100, 20, "Submit")) {
-					if (action_type_logo == 3)
-						file_name = "cap";
-					file_name_flag = true;
-					file_logo_flag = true;
-				}
-				if (cvui::button(frame, 100, 190, 100, 20, "Default")) {
-					if (action_type_logo == 1)
-						file_name = image_name;
-					else if (action_type_logo == 2)
-						file_name = videoName;
-					else if (action_type_logo == 3)
-						file_name = "cap";
-					logo_name = logoName;
-					file_name_flag = true;
-					file_logo_flag = true;
-				}
-				cvui::text(frame, 100, 250, message, 0.4);
-				cvui::update;
-			}
-			// add to image
-			else if (action_type_logo == 1) {
-				if (image.empty() || logo.empty()) {
-					image = imread(file_name);
-					image.copyTo(image_copy);
-					if (image.empty()) {
-						file_name_flag = false;
-						message = "Open file failed.";
-						continue;
-					}
-					else
-						message = "";
-					logo = imread(logo_name, -1);
-					if (logo.empty()) {
-						file_logo_flag = false;
-						message = "Open logo failed.";
-						continue;
-					}
-					else
-						message = "";
-
-				}
-				else {
-					if (cvui::button(frame, 50, 190, 120, 28, "Right") || GetAsyncKeyState(VK_RIGHT)) {
-						if (x < image.cols - logo.cols) x++;
-						message = "";
-					}
-					else if (cvui::button(frame, 50, 220, 120, 28, "Left") || GetAsyncKeyState(VK_LEFT)) {
-						if (x > 0) x--;
-						message = "";
-					}
-					else if (cvui::button(frame, 200, 190, 120, 28, "Up") || GetAsyncKeyState(VK_UP)) {
-						if (y > 0) y--;
-						message = "";
-					}
-					else if (cvui::button(frame, 200, 220, 120, 28, "Down") || GetAsyncKeyState(VK_DOWN)) {
-						if (y < image.rows - logo.rows) y++;
-						message = "";
-
-					}
-					else if (cvui::button(frame, 350, 190, 120, 56, "SAVE") || GetAsyncKeyState(83)) {
-						imwrite(make_file_name(file_name, false, false), image);
-						cout << "Zapis";
-						message = "Saved";
-					}
-
-					image_copy.copyTo(image);
-					roi = Rect(x, y, logo.cols, logo.rows);
-					image(roi) = logo + image(roi);
-					cv::imshow(file_name, image);
-				}
-
-				cvui::text(frame, 50, 100, "Image name: " + file_name, 0.7);
-				cvui::text(frame, 50, 130, "Logo name: " + logo_name, 0.7);
-
-			}// TODO video
-			// add to video
-			else if (action_type_logo == 2) {
-				if (!video_cap.isOpened() || logo.empty()) {
-					if (!video_cap.isOpened())
-						video_cap = VideoCapture(file_name);
-					if (!video_cap.isOpened()) {
-						//file_name = "";
-						//action_type_logo = 0;
-						file_name_flag = false;
-						message = "Open video failed !";
-						continue;
 					}
 					else {
-						message = "No recording";
-						trackbar_value_frame = 0;
-						number_of_frames = video_cap.get(CAP_PROP_FRAME_COUNT) - 1;
-						read_frame();
-					}
-					logo = imread(logo_name, -1);
-					if (logo.empty()) {
-						file_logo_flag = false;
-						message = "Open logo failed.";
-						continue;
-					}
-					else {
-						message = "No recording";
-					}
-				}
-				else {
-					if (cvui::button(frame, 50, 190, 120, 28, "Right") || GetAsyncKeyState(VK_RIGHT)) {
-						if (x < frame_video.cols - logo.cols) x++;
-					}
-					else if (cvui::button(frame, 50, 220, 120, 28, "Left") || GetAsyncKeyState(VK_LEFT)) {
-						if (x > 0) x--;
+						if (cvui::button(frame, 50, 190, 120, 28, "Right") || GetAsyncKeyState(VK_RIGHT)) {
+							if (x < image.cols - logo.cols) x++;
+							message = "";
+						}
+						else if (cvui::button(frame, 50, 220, 120, 28, "Left") || GetAsyncKeyState(VK_LEFT)) {
+							if (x > 0) x--;
+							message = "";
+						}
+						else if (cvui::button(frame, 200, 190, 120, 28, "Up") || GetAsyncKeyState(VK_UP)) {
+							if (y > 0) y--;
+							message = "";
+						}
+						else if (cvui::button(frame, 200, 220, 120, 28, "Down") || GetAsyncKeyState(VK_DOWN)) {
+							if (y < image.rows - logo.rows) y++;
+							message = "";
 
-					}
-					else if (cvui::button(frame, 200, 190, 120, 28, "Up") || GetAsyncKeyState(VK_UP)) {
-						if (y > 0) y--;
-					}
-					else if (cvui::button(frame, 200, 220, 120, 28, "Down") || GetAsyncKeyState(VK_DOWN)) {
-						if (y < frame_video.rows - logo.rows) y++;
+						}
+						else if (cvui::button(frame, 350, 190, 120, 56, "SAVE") || GetAsyncKeyState(83)) {
+							imwrite(make_file_name(file_name, false, false), image);
+							cout << "Zapis";
+							message = "Saved";
+						}
 
+						image_copy.copyTo(image);
+						roi = Rect(x, y, logo.cols, logo.rows);
+						image(roi) = logo + image(roi);
+						cv::imshow(file_name, image);
 					}
-					//image.copyTo(image_copy);
-					frame_video1.copyTo(frame_video);
-					roi = Rect(x, y, logo.cols, logo.rows);
-					frame_video(roi) = logo + frame_video(roi);
 
-					cv::imshow(file_name, frame_video);
-					if ((cvui::button(frame, 330, 190, 120, 56, "SAVE") || GetAsyncKeyState(83)) && !save_video_flag) {
-						cout << make_file_name(file_name, true, false);
-						video_writer = VideoWriter(make_file_name(file_name, true, false), CV_FOURCC('D', 'I', 'V', 'X'), video_cap.get(CV_CAP_PROP_FPS), Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
+					cvui::text(frame, 50, 100, "Image name: " + file_name, 0.7);
+					cvui::text(frame, 50, 130, "Logo name: " + logo_name, 0.7);
 
-						//video_writer = VideoWriter(file_name.substr(0, file_name.size() - 4) + "_logo.avi", CV_FOURCC('D', 'I', 'V', 'X'), video_cap.get(CV_CAP_PROP_FPS), Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
-						save_video_flag = true;
-					}
-					else if ((cvui::button(frame, 480, 190, 120, 56, "END") || GetAsyncKeyState(69)) && save_video_flag) {
-						video_writer.release();
-						save_video_flag = false;
-						message = "No recording";
-					}
-					if (save_video_flag && trackbar_value_frame <= number_of_frames) {
-
-						video_writer.write(frame_video);
-						move_frames_right(1);
-						read_frame();
-						message = "Recording";
-						if (trackbar_value_frame == number_of_frames) {
-							set_first_frame();
-							save_video_flag = false;
+				}// TODO video
+				// add to video
+				else if (action_type_logo == 2) {
+					if (!video_cap.isOpened() || logo.empty()) {
+						if (!video_cap.isOpened())
+							video_cap = VideoCapture(file_name);
+						if (!video_cap.isOpened()) {
+							file_name_flag = false;
+							message = "Open video failed !";
+							continue;
+						}
+						else {
+							message = "No recording";
+							trackbar_value_frame = 0;
+							number_of_frames = video_cap.get(CAP_PROP_FRAME_COUNT) - 1;
+							read_frame();
+						}
+						logo = imread(logo_name, -1);
+						if (logo.empty()) {
+							file_logo_flag = false;
+							message = "Open logo failed.";
+							continue;
+						}
+						else {
 							message = "No recording";
 						}
 					}
-					cvui::text(frame, 50, 100, "Image name: " + file_name, 0.7);
-					cvui::text(frame, 50, 130, "Logo name: " + logo_name, 0.7);
+					else {
+						if (cvui::button(frame, 50, 190, 120, 28, "Right") || GetAsyncKeyState(VK_RIGHT)) {
+							if (x < frame_video.cols - logo.cols) x++;
+						}
+						else if (cvui::button(frame, 50, 220, 120, 28, "Left") || GetAsyncKeyState(VK_LEFT)) {
+							if (x > 0) x--;
+
+						}
+						else if (cvui::button(frame, 200, 190, 120, 28, "Up") || GetAsyncKeyState(VK_UP)) {
+							if (y > 0) y--;
+						}
+						else if (cvui::button(frame, 200, 220, 120, 28, "Down") || GetAsyncKeyState(VK_DOWN)) {
+							if (y < frame_video.rows - logo.rows) y++;
+
+						}
+						frame_video1.copyTo(frame_video);
+						roi = Rect(x, y, logo.cols, logo.rows);
+						frame_video(roi) = logo + frame_video(roi);
+
+						cv::imshow(file_name, frame_video);
+						if ((cvui::button(frame, 330, 190, 120, 56, "SAVE") || GetAsyncKeyState(83)) && !save_video_flag) {
+							cout << make_file_name(file_name, true, false);
+							video_writer = VideoWriter(make_file_name(file_name, true, false), CV_FOURCC('D', 'I', 'V', 'X'), video_cap.get(CV_CAP_PROP_FPS), Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
+							save_video_flag = true;
+						}
+						else if ((cvui::button(frame, 480, 190, 120, 56, "END") || GetAsyncKeyState(69)) && save_video_flag) {
+							video_writer.release();
+							save_video_flag = false;
+							message = "No recording";
+						}
+						if (save_video_flag && trackbar_value_frame <= number_of_frames) {
+
+							video_writer.write(frame_video);
+							move_frames_right(1);
+							read_frame();
+							message = "Recording";
+							if (trackbar_value_frame == number_of_frames) {
+								set_first_frame();
+								save_video_flag = false;
+								message = "No recording";
+							}
+						}
+						cvui::text(frame, 50, 100, "Image name: " + file_name, 0.7);
+						cvui::text(frame, 50, 130, "Logo name: " + logo_name, 0.7);
+					}
 				}
-			}// TODO capture
-			// add to cap
-			else if (action_type_logo == 3) {
-				if (!video_cap.isOpened() || logo.empty()) {
-					if (!video_cap.isOpened())
-						video_cap = VideoCapture(0);
-					if (!video_cap.isOpened()) {
-						//file_name = "";
-						//action_type_logo = 0;
-						file_name_flag = false;
-						message = "Open cap failed !";
-						continue;
+				// add to cap
+				else if (action_type_logo == 3) {
+					if (!video_cap.isOpened() || logo.empty()) {
+						if (!video_cap.isOpened())
+							video_cap = VideoCapture(0);
+						if (!video_cap.isOpened()) {
+							file_name_flag = false;
+							message = "Open cap failed !";
+							continue;
+						}
+						else {
+							message = "";
+							video_cap.read(frame_video);
+						}
+						logo = imread(logo_name, -1);
+						if (logo.empty()) {
+							file_logo_flag = false;
+							message = "Open logo failed.";
+							continue;
+						}
+						else {
+							message = "No recording";
+						}
 					}
 					else {
-						message = "";
-						video_cap.read(frame_video);
-					}
-					logo = imread(logo_name, -1);
-					if (logo.empty()) {
-						file_logo_flag = false;
-						message = "Open logo failed.";
-						continue;
-					}
-					else {
-						message = "No recording";
-					}
-				}
-				else {
-					if (cvui::button(frame, 50, 190, 120, 28, "Right") || GetAsyncKeyState(VK_RIGHT)) {
-						if (x < frame_video.cols - logo.cols) x++;
-					}
-					else if (cvui::button(frame, 50, 220, 120, 28, "Left") || GetAsyncKeyState(VK_LEFT)) {
-						if (x > 0) x--;
+						if (cvui::button(frame, 50, 190, 120, 28, "Right") || GetAsyncKeyState(VK_RIGHT)) {
+							if (x < frame_video.cols - logo.cols) x++;
+						}
+						else if (cvui::button(frame, 50, 220, 120, 28, "Left") || GetAsyncKeyState(VK_LEFT)) {
+							if (x > 0) x--;
 
-					}
-					else if (cvui::button(frame, 200, 190, 120, 28, "Up") || GetAsyncKeyState(VK_UP)) {
-						if (y > 0) y--;
-					}
-					else if (cvui::button(frame, 200, 220, 120, 28, "Down") || GetAsyncKeyState(VK_DOWN)) {
-						if (y < frame_video.rows - logo.rows) y++;
+						}
+						else if (cvui::button(frame, 200, 190, 120, 28, "Up") || GetAsyncKeyState(VK_UP)) {
+							if (y > 0) y--;
+						}
+						else if (cvui::button(frame, 200, 220, 120, 28, "Down") || GetAsyncKeyState(VK_DOWN)) {
+							if (y < frame_video.rows - logo.rows) y++;
 
-					}
-					roi = Rect(x, y, logo.cols, logo.rows);
-					frame_video(roi) = logo + frame_video(roi);
+						}
+						roi = Rect(x, y, logo.cols, logo.rows);
+						frame_video(roi) = logo + frame_video(roi);
 
-					cv::imshow(file_name, frame_video);
-					if ((cvui::button(frame, 330, 190, 120, 56, "SAVE") || GetAsyncKeyState(83)) && !save_video_flag) {
-						cout << make_file_name(file_name, true, false);
-						video_writer = VideoWriter(make_file_name(file_name, true, false), CV_FOURCC('D', 'I', 'V', 'X'), 15, Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
+						cv::imshow(file_name, frame_video);
+						if ((cvui::button(frame, 330, 190, 120, 56, "SAVE") || GetAsyncKeyState(83)) && !save_video_flag) {
+							cout << make_file_name(file_name, true, false);
+							video_writer = VideoWriter(make_file_name(file_name, true, false), CV_FOURCC('D', 'I', 'V', 'X'), 15, Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
 
-						save_video_flag = true;
-						message = "Recording";
-					}
-					else if ((cvui::button(frame, 470, 190, 120, 56, "END") || GetAsyncKeyState(69)) && save_video_flag) {
-						video_writer.release();
-						save_video_flag = false;
-						message = "No recording";
-					}
-					if (save_video_flag) {
-						video_writer.write(frame_video);
-					}
+							save_video_flag = true;
+							message = "Recording";
+						}
+						else if ((cvui::button(frame, 470, 190, 120, 56, "END") || GetAsyncKeyState(69)) && save_video_flag) {
+							video_writer.release();
+							save_video_flag = false;
+							message = "No recording";
+						}
+						if (save_video_flag) {
+							video_writer.write(frame_video);
+						}
 
-					if (!video_cap.read(frame_video)) {
-						message = "Read camera failed";
-						goto back;
+						if (!video_cap.read(frame_video)) {
+							message = "Read camera failed";
+							goto back;
+						}
+						cvui::text(frame, 50, 100, "Image name: " + file_name, 0.7);
+						cvui::text(frame, 50, 130, "Logo name: " + logo_name, 0.7);
 					}
-					cvui::text(frame, 50, 100, "Image name: " + file_name, 0.7);
-					cvui::text(frame, 50, 130, "Logo name: " + logo_name, 0.7);
 				}
 			}
-		}
 
-		butt = waitKeyEx(5);
-		// QUIT
-		if (cvui::button(frame, 650, 20, 120, 28, "QUIT") || butt == 27) {
-			destroyAllWindows();
-			if (video_cap.isOpened())
-				video_cap.release();
-			if (video_writer.isOpened())
-				video_writer.release();
-			break;
-		}
-		// Main menu
-		if (cvui::button(frame, 650, 50, 120, 28, "Main menu")) {
-			message = "";
-		back:
-			action = 0;
-			x = y = 0;
-			destroyWindow(file_name);
-			action_type_logo = -1;
-			choose_source_flag = false;
-			file_name_flag = false;
-			file_logo_flag = false;
-			save_video_flag = false;
-			if (video_cap.isOpened())
-				video_cap.release();
-			if (video_writer.isOpened())
-				video_writer.release();
-			continue;
-		}
+			butt = waitKeyEx(5);
+			// QUIT
+			if (cvui::button(frame, 650, 20, 120, 28, "QUIT") || butt == 27) {
+				destroyAllWindows();
+				if (video_cap.isOpened())
+					video_cap.release();
+				if (video_writer.isOpened())
+					video_writer.release();
+				break;
+			}
+			// Main menu
+			if (cvui::button(frame, 650, 50, 120, 28, "Main menu")) {
+				message = "";
+			back:
+				action = 0;
+				x = y = 0;
+				destroyWindow(file_name);
+				action_type_logo = -1;
+				choose_source_flag = false;
+				file_name_flag = false;
+				file_logo_flag = false;
+				save_video_flag = false;
+				if (video_cap.isOpened())
+					video_cap.release();
+				if (video_writer.isOpened())
+					video_writer.release();
+				continue;
+			}
 
-		cvui::text(frame, 100, 250, message, 0.4);
-		cvui::update;
-		cvui::imshow(WINDOW_NAME, frame);
+			cvui::text(frame, 100, 250, message, 0.4);
+			cvui::update;
+			cvui::imshow(WINDOW_NAME, frame);
 		}
 		// zapis wideo
 		else if (action == 3) {
@@ -712,7 +701,6 @@ int main() {
 							video_cap.read(frame_video);
 							message = "Recording";
 							if (!save_video_flag) {
-								//putText(frame_video, "REC", Point2i(30, 30), FONT_HERSHEY_COMPLEX, 1, Scalar(0, 0, 255), 2);
 								video_writer = VideoWriter(make_file_name(file_name, true, false, true), CV_FOURCC('D', 'I', 'V', 'X'), fps, Size(static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_WIDTH)), static_cast<int>(video_cap.get(CV_CAP_PROP_FRAME_HEIGHT))), true);
 								save_video_flag = true;
 							}
