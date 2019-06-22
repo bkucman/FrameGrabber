@@ -1,8 +1,7 @@
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
-//#include "EnhancedWindow.h"
 
-#include "VideoManagement.h" // to change frames in video
+#include "VideoManagement.h"
 #include "main.h"
 
 using namespace cv;
@@ -101,7 +100,7 @@ int main() {
 			if (butt == 27)
 				break;
 		}
-		// frame geabber
+		// frame grabber
 		else if (action == 1) {
 			if (!file_name_flag) {
 				cvui::text(frame, 260, 30, "Frame Grabber", 1);
@@ -156,7 +155,6 @@ int main() {
 				}
 
 				cvui::text(frame, 260, 30, "Frame Grabber", 1);
-				cout << next_scene;
 				if (prev_scene || next_scene) {
 					if (prev_scene) {
 						read_frame_lastORFirst(0);
@@ -204,24 +202,24 @@ int main() {
 					cvui::update;
 				}
 
-				else if (cvui::button(frame, 50, 250, 120, 28, "+15 frames") || GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_RIGHT)) {
+				else if (cvui::button(frame, 50, 250, 120, 28, "-15 frames") || GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_RIGHT)) {
 					move_frames_right(15);
 					read_frame();
 					cvui::update;
 				}
-				else if (cvui::button(frame, 50, 280, 120, 28, "-15 frames") || GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_LEFT)) {
+				else if (cvui::button(frame, 50, 280, 120, 28, "+15 frames") || GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(VK_LEFT)) {
 					move_frames_left(15);
 					read_frame();
 					cvui::update;
 
 				}
-				else if (cvui::button(frame, 50, 340, 120, 28, "-50 frames") || GetAsyncKeyState(VK_MENU) && GetAsyncKeyState(VK_LEFT)) {
+				else if (cvui::button(frame, 50, 340, 120, 28, "+50 frames") || GetAsyncKeyState(VK_MENU) && GetAsyncKeyState(VK_LEFT)) {
 					move_frames_left(50);
 					read_frame();
 					cvui::update;
 
 				}
-				else if (cvui::button(frame, 50, 310, 120, 28, "+50 frames") || GetAsyncKeyState(VK_NEXT)) {
+				else if (cvui::button(frame, 50, 310, 120, 28, "-50 frames") || GetAsyncKeyState(VK_NEXT)) {
 					move_frames_right(50);
 					read_frame();
 					cvui::update;
@@ -263,7 +261,6 @@ int main() {
 				cvui::update;
 				if (cvui::button(frame, 650, 20, 120, 28, "QUIT") || butt == 27)
 				{
-					//RELEASE !!!!
 					video_cap.release();
 					destroyAllWindows();
 					break;
@@ -278,18 +275,18 @@ int main() {
 		// add logo
 		else if (action == 2) {
 
-			cvui::text(frame, 330, 30, "Add logo", 1);
+			cvui::text(frame, 330, 30, "Add logo to:", 1);
 			// choose where insert logo
 			if (!choose_source_flag) {
-				if (cvui::button(frame, 150, 120, 500, 100, "Add to image")) {
+				if (cvui::button(frame, 150, 120, 500, 100, "Image")) {
 					action_type_logo = 1;
 					choose_source_flag = true;
 				}
-				else if (cvui::button(frame, 150, 220, 500, 100, "Add to video")) {
+				else if (cvui::button(frame, 150, 220, 500, 100, "Video")) {
 					action_type_logo = 2;
 					choose_source_flag = true;
 				}
-				else if (cvui::button(frame, 150, 320, 500, 100, "Add to camera")) {
+				else if (cvui::button(frame, 150, 320, 500, 100, "Camera")) {
 					action_type_logo = 3;
 					choose_source_flag = true;
 				}
@@ -381,7 +378,7 @@ int main() {
 					cvui::text(frame, 50, 100, "Image name: " + file_name, 0.7);
 					cvui::text(frame, 50, 130, "Logo name: " + logo_name, 0.7);
 
-				}// TODO video
+				}
 				// add to video
 				else if (action_type_logo == 2) {
 					if (!video_cap.isOpened() || logo.empty()) {
