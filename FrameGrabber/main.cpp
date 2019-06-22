@@ -119,16 +119,12 @@ int main() {
 				}
 				if (cvui::button(frame, 650, 50, 120, 28, "Main menu")) {
 					action = 0;
-					prev_scene = false;
-					next_scene = false;
 					file_name_flag = false;
-					clear_variable();
 					continue;
 				}
 				cvui::update;
 				if (cvui::button(frame, 650, 20, 120, 28, "QUIT") || butt == 27)
 				{
-					video_cap.release();
 					destroyAllWindows();
 					break;
 				}
@@ -264,8 +260,8 @@ int main() {
 				cvui::update;
 				cvui::imshow(WINDOW_NAME, frame);
 
-				cv::imshow(videoName, frame_video);
-				cv::imshow(videoName + "1", frame_video1);
+				cv::imshow(file_name, frame_video);
+				cv::imshow(file_name + "1", frame_video1);
 			}
 		}
 		// add logo
