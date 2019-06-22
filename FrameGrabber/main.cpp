@@ -712,7 +712,6 @@ int main() {
 				}
 			}
 
-			//cofanie
 			butt = waitKeyEx(10);
 			if (cvui::button(frame, 670, 20, 120, 28, "QUIT") || butt == 27) {
 				destroyAllWindows();
