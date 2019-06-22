@@ -98,8 +98,7 @@ int main() {
 			cvui::imshow(WINDOW_NAME, frame);
 
 			butt = waitKeyEx(10);
-			if (butt == 27)
-				break;
+				
 		}
 		// frame grabber
 		else if (action == 1) {
@@ -107,7 +106,6 @@ int main() {
 				cvui::text(frame, 260, 30, "Frame Grabber", 1);
 				cvui::text(frame, 90, 160, "Enter the name of video (with extension)", 0.5);
 				cvui::input(frame, 90, 190, 200, "input", file_name);
-
 
 				if (cvui::button(frame, 90, 230, 120, 28, "Submit")) {
 
@@ -124,9 +122,6 @@ int main() {
 					prev_scene = false;
 					next_scene = false;
 					file_name_flag = false;
-					video_cap.release();
-					destroyWindow(videoName);
-					destroyWindow(videoName + "1");
 					clear_variable();
 					continue;
 				}
@@ -254,8 +249,8 @@ int main() {
 					next_scene = false;
 					file_name_flag = false;
 					video_cap.release();
-					destroyWindow(videoName);
-					destroyWindow(videoName + "1");
+					destroyWindow(file_name);
+					destroyWindow(file_name + "1");
 					clear_variable();
 					continue;
 				}
