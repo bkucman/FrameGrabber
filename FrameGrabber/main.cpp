@@ -1,7 +1,8 @@
 #define CVUI_IMPLEMENTATION
 #include "cvui.h"
+//#include "EnhancedWindow.h"
 
-#include "VideoManagement.h"
+#include "VideoManagement.h" // to change frames in video
 #include "main.h"
 
 using namespace cv;
@@ -41,6 +42,7 @@ int main() {
 	int action = 0;
 	int choose_action_record = -1;
 	int action_make_images = 0;
+	int action_type_logo = 0;
 
 	// extern variable 
 	extern VideoCapture video_cap;
@@ -58,7 +60,6 @@ int main() {
 	bool save_video_flag = false;
 	bool record = false;
 	bool choose_action_images = false;
-	bool action_type_logo = false;
 	bool file_logo_flag = false;
 
 	// checkbox
@@ -74,16 +75,16 @@ int main() {
 			if (cvui::button(frame, 150, 20, 500, 100, "Frame Grabber")) {
 				action = 1;
 			}
-			else if (cvui::button(frame, 150, 120, 500, 100, "Add logo")) {
+			if (cvui::button(frame, 150, 120, 500, 100, "Add logo")) {
 				action = 2;
 			}
-			else if (cvui::button(frame, 150, 220, 500, 100, "Record")) {
+			if (cvui::button(frame, 150, 220, 500, 100, "Record")) {
 				action = 3;
 			}
-			else if (cvui::button(frame, 150, 320, 500, 100, "Save to images")) {
+			if (cvui::button(frame, 150, 320, 500, 100, "Save to images")) {
 				action = 4;
 			}
-			else if (cvui::button(frame, 150, 420, 500, 100, "Video from images")) {
+			if (cvui::button(frame, 150, 420, 500, 100, "Video from images")) {
 				action = 5;
 			}
 			if (cvui::button(frame, 660, 20, 120, 28, "QUIT") || butt == 27)
@@ -294,7 +295,6 @@ int main() {
 			else {
 				// set files
 				if (!file_name_flag || !file_logo_flag) {
-
 					if (action_type_logo != 3) {
 						cvui::text(frame, 100, 80, "Image/Video file:", 0.4);
 						cvui::input(frame, 250, 80, 150, "file_name", file_name);
